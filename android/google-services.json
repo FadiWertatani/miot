@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "703489618092",
+    "firebase_url": "https://miot-ef69a-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "miot-ef69a",
+    "storage_bucket": "miot-ef69a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:703489618092:android:4ec419059f4e002c6b2f09",
+        "android_client_info": {
+          "package_name": "com.example.miot"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDSuI5GqqvTmsqlQaGb0vIxBziHHQjl8BQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:703489618092:android:89b47ecdde89a8456b2f09",
+        "android_client_info": {
+          "package_name": "com.example.miot_android"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDSuI5GqqvTmsqlQaGb0vIxBziHHQjl8BQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:703489618092:android:72dd3c16c43855b16b2f09",
+        "android_client_info": {
+          "package_name": "com.example.miott"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDSuI5GqqvTmsqlQaGb0vIxBziHHQjl8BQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

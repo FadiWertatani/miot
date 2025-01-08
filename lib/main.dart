@@ -57,7 +57,7 @@ class _SensorDataChartsState extends State<SensorDataCharts> {
           if (value is Map) {
             final bodyTemp = double.tryParse(value['BodyTemp']?.toString() ?? '0') ?? 0.0;
             final ambientTemp = double.tryParse(value['AmbientTemp']?.toString() ?? '0') ?? 0.0;
-            final movement = (value['Movement'] == 'Yes') ? 1.0 : 0.0;
+            final movement = double.tryParse(value['Movement']?.toString() ?? '0') ?? 0.0;
 
             setState(() {
               bodyTempData.add(FlSpot(_xIndex.toDouble(), bodyTemp));
@@ -77,28 +77,53 @@ class _SensorDataChartsState extends State<SensorDataCharts> {
 
   // Update threshold values
   void _updateThresholds() async {
-    setState(() {
-      _bodyTempThreshold = double.tryParse(_bodyTempThresholdController.text) ?? 0.0;
-      _ambientTempThreshold = double.tryParse(_ambientTempThresholdController.text) ?? 0.0;
-      _movementThreshold = double.tryParse(_movementThresholdController.text) ?? 0.0;
-    });
+    Map<String, dynamic> updatedFields = {};
 
-    // Save thresholds to Firestore
-    try {
-      await FirebaseFirestore.instance.collection('thresholds').doc('sensorData').set({
-        'bodyTempThreshold': _bodyTempThreshold,
-        'ambientTempThreshold': _ambientTempThreshold,
-        'movementThreshold': _movementThreshold,
-      });
-
-      print('Thresholds successfully saved to Firestore.');
-    } catch (e) {
-      print('Error saving thresholds to Firestore: $e');
+    // Check if body temperature threshold was changed
+    if (_bodyTempThresholdController.text.isNotEmpty) {
+      double newBodyTempThreshold = double.tryParse(_bodyTempThresholdController.text) ?? 0.0;
+      if (newBodyTempThreshold != _bodyTempThreshold) {
+        updatedFields['bodyTempThreshold'] = newBodyTempThreshold;
+        _bodyTempThreshold = newBodyTempThreshold;
+      }
     }
 
-    // Re-fetch the data with updated thresholds
-    _fetchData();
+    // Check if ambient temperature threshold was changed
+    if (_ambientTempThresholdController.text.isNotEmpty) {
+      double newAmbientTempThreshold = double.tryParse(_ambientTempThresholdController.text) ?? 0.0;
+      if (newAmbientTempThreshold != _ambientTempThreshold) {
+        updatedFields['ambientTempThreshold'] = newAmbientTempThreshold;
+        _ambientTempThreshold = newAmbientTempThreshold;
+      }
+    }
+
+    // Check if movement threshold was changed
+    if (_movementThresholdController.text.isNotEmpty) {
+      double newMovementThreshold = double.tryParse(_movementThresholdController.text) ?? 0.0;
+      if (newMovementThreshold != _movementThreshold) {
+        updatedFields['movementThreshold'] = newMovementThreshold;
+        _movementThreshold = newMovementThreshold;
+      }
+    }
+
+    // Only update Firestore if there are changes
+    if (updatedFields.isNotEmpty) {
+      try {
+        await FirebaseFirestore.instance.collection('thresholds').doc('sensorData').update(updatedFields);
+        print('Thresholds successfully updated in Firestore.');
+      } catch (e) {
+        print('Error updating thresholds in Firestore: $e');
+      }
+
+      // Re-fetch the data with updated thresholds
+      _fetchData();
+    } else {
+      print('No thresholds were changed.');
+    }
+
+    setState(() {}); // To refresh the UI
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -133,7 +158,7 @@ class _SensorDataChartsState extends State<SensorDataCharts> {
               ElevatedButton(onPressed: _updateThresholds, child: Text("Update Thresholds")),
               Container(
                 height: 200,
-                child: _movementBuildChart(movementData, "Movement", Colors.green),
+                child: _buildChart(movementData, "Movement", Colors.green, _movementThreshold),
               ),
             ],
           ),
@@ -196,61 +221,61 @@ class _SensorDataChartsState extends State<SensorDataCharts> {
     );
   }
 
-  Widget _movementBuildChart(List<FlSpot> data, String title, Color color) {
-    double threshold = 1.0;
-    bool isAboveThreshold = data.isNotEmpty && data.last.y == threshold;
-    print(data.last.y);
-
-    return Card(
-      elevation: 4.0,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Movement",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                CircleAvatar(
-                  radius: 10,
-                  backgroundColor: isAboveThreshold ? Colors.red : Colors.green,
-                ),
-              ],
-            ),
-            SizedBox(height: 16),
-            Expanded(
-              child: LineChart(
-                LineChartData(
-                  gridData: FlGridData(show: true),
-                  titlesData: FlTitlesData(
-                    leftTitles: SideTitles(showTitles: true),
-                    bottomTitles: SideTitles(showTitles: false),
-                  ),
-                  borderData: FlBorderData(
-                    show: true,
-                    border: Border.all(color: Colors.grey, width: 1),
-                  ),
-                  lineBarsData: [
-                    LineChartBarData(
-                      spots: movementData,
-                      isCurved: true,
-                      colors: [Colors.green],
-                      dotData: FlDotData(show: false),
-                      belowBarData: BarAreaData(show: false),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  // Widget _movementBuildChart(List<FlSpot> data, String title, Color color) {
+  //   double threshold = 1.0;
+  //   bool isAboveThreshold = data.isNotEmpty && data.last.y == threshold;
+  //   print(data.last.y);
+  //
+  //   return Card(
+  //     elevation: 4.0,
+  //     child: Padding(
+  //       padding: const EdgeInsets.all(16.0),
+  //       child: Column(
+  //         crossAxisAlignment: CrossAxisAlignment.start,
+  //         children: [
+  //           Row(
+  //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //             children: [
+  //               Text(
+  //                 "Movement",
+  //                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+  //               ),
+  //               CircleAvatar(
+  //                 radius: 10,
+  //                 backgroundColor: isAboveThreshold ? Colors.red : Colors.green,
+  //               ),
+  //             ],
+  //           ),
+  //           SizedBox(height: 16),
+  //           Expanded(
+  //             child: LineChart(
+  //               LineChartData(
+  //                 gridData: FlGridData(show: true),
+  //                 titlesData: FlTitlesData(
+  //                   leftTitles: SideTitles(showTitles: true),
+  //                   bottomTitles: SideTitles(showTitles: false),
+  //                 ),
+  //                 borderData: FlBorderData(
+  //                   show: true,
+  //                   border: Border.all(color: Colors.grey, width: 1),
+  //                 ),
+  //                 lineBarsData: [
+  //                   LineChartBarData(
+  //                     spots: movementData,
+  //                     isCurved: true,
+  //                     colors: [Colors.green],
+  //                     dotData: FlDotData(show: false),
+  //                     belowBarData: BarAreaData(show: false),
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 
 
 

@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:miott/MQTTService.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -131,6 +132,44 @@ class _SensorDataChartsState extends State<SensorDataCharts> {
       appBar: AppBar(
         title: Text('Sensor Data Charts'),
         centerTitle: true,
+        actions: [
+          StatefulBuilder(
+            builder: (context, setState) {
+              final mqttService = MQTTService(); // Initialize MQTT service
+
+              return GestureDetector(
+                onLongPress: () async {
+                  // Long press sends "ON" message
+                  await mqttService.connect();
+                  await mqttService.sendMessage(
+                    'sensor/button',
+                    'ON',
+                  );
+                },
+                onLongPressUp: () async {
+                  // Release sends "OFF" message
+                  await mqttService.sendMessage(
+                    'sensor/button',
+                    'OFF',
+                  );
+                  mqttService.disconnect();
+                },
+                child: Container(
+                  margin: EdgeInsets.symmetric(horizontal: 10),
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: Colors.blue,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    'LED',
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),

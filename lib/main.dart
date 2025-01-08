@@ -142,14 +142,14 @@ class _SensorDataChartsState extends State<SensorDataCharts> {
                   // Long press sends "ON" message
                   await mqttService.connect();
                   await mqttService.sendMessage(
-                    'sensor/button',
+                    'allumer/action',
                     'ON',
                   );
                 },
                 onLongPressUp: () async {
                   // Release sends "OFF" message
                   await mqttService.sendMessage(
-                    'sensor/button',
+                    'allumer/action',
                     'OFF',
                   );
                   mqttService.disconnect();

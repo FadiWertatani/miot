@@ -143,14 +143,14 @@ class _SensorDataChartsState extends State<SensorDataCharts> {
                   await mqttService.connect();
                   await mqttService.sendMessage(
                     'allumer/action',
-                    'ON',
+                    'on',
                   );
                 },
                 onLongPressUp: () async {
                   // Release sends "OFF" message
                   await mqttService.sendMessage(
                     'allumer/action',
-                    'OFF',
+                    'off',
                   );
                   mqttService.disconnect();
                 },
@@ -197,7 +197,7 @@ class _SensorDataChartsState extends State<SensorDataCharts> {
               ElevatedButton(onPressed: _updateThresholds, child: Text("Update Thresholds")),
               Container(
                 height: 200,
-                child: _buildChart(movementData, "Movement", Colors.green, _movementThreshold),
+                child: _buildChart(movementData, "Acceleration", Colors.green, _movementThreshold),
               ),
             ],
           ),
